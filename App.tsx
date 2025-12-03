@@ -49,9 +49,6 @@ function App() {
                 >
                   Novo Protesto / Sugestão
                 </button>
-                <button className="px-8 py-3 bg-white text-slate-700 border border-slate-300 rounded-lg font-medium hover:bg-slate-50 transition">
-                  Acompanhar Protocolo
-                </button>
               </div>
 
               <p className="mt-6 text-sm text-slate-500 max-w-lg mx-auto">
