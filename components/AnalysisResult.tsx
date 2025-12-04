@@ -24,7 +24,13 @@ const AnalysisResult: React.FC<Props> = ({ data, onClose }) => {
 
       <div className="p-8 space-y-8">
         
-        <div className="bg-slate-50 border border-slate-200 rounded-lg p-6 text-center">
+        <div className="bg-slate-50 border border-slate-200 rounded-lg p-6 text-center relative overflow-hidden">
+          {data.savedToCloud && (
+            <div className="absolute top-0 right-0 bg-blue-100 text-blue-700 text-xs font-bold px-3 py-1 rounded-bl-lg flex items-center">
+              <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><path d="M5.5 13a3.5 3.5 0 01-.369-6.98 4 4 0 117.753-1.977A4.5 4.5 0 1113.5 13H11V9.413l1.293 1.293a1 1 0 001.414-1.414l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13H5.5z"></path></svg>
+              Salvo no Google Drive
+            </div>
+          )}
           <span className="text-sm font-semibold text-slate-500 uppercase tracking-wide">Número do Protocolo</span>
           <div className="text-3xl font-mono font-bold text-slate-800 mt-2 select-all">
             {data.protocol}

@@ -48,4 +48,5 @@ export interface SubmissionResult {
   protocol: string;
   message: string;
   estimatedResponseTime: string;
+  savedToCloud: boolean;
 }

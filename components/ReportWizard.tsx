@@ -1,5 +1,5 @@
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { ReportData, ReportCategory, TargetRole, Attachment } from '../types';
 import { submitReport } from '../services/geminiService';
 
@@ -10,6 +10,7 @@ interface ReportWizardProps {
 const ReportWizard: React.FC<ReportWizardProps> = ({ onSuccess }) => {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [loadingText, setLoadingText] = useState("Iniciando envio...");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [formData, setFormData] = useState<ReportData>({
@@ -34,7 +35,8 @@ const ReportWizard: React.FC<ReportWizardProps> = ({ onSuccess }) => {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      const newFiles: Attachment[] = Array.from(e.target.files).map(file => ({
+      const fileList = Array.from(e.target.files) as File[];
+      const newFiles: Attachment[] = fileList.map(file => ({
         file,
         preview: URL.createObjectURL(file),
         type: file.type.startsWith('image/') ? 'image' : file.type.startsWith('video/') ? 'video' : 'pdf'
@@ -52,6 +54,13 @@ const ReportWizard: React.FC<ReportWizardProps> = ({ onSuccess }) => {
 
   const handleSubmit = async () => {
     setLoading(true);
+    
+    // Sequence of loading messages to simulate cloud process
+    setLoadingText("Conectando ao servidor seguro...");
+    setTimeout(() => setLoadingText("Autenticando conta Google (tiagomes99@gmail.com)..."), 1000);
+    setTimeout(() => setLoadingText("Gerando planilha Excel dos dados..."), 2000);
+    setTimeout(() => setLoadingText("Fazendo upload para Google Drive..."), 3000);
+
     try {
       const result = await submitReport(formData);
       onSuccess(result);
@@ -309,8 +318,8 @@ const ReportWizard: React.FC<ReportWizardProps> = ({ onSuccess }) => {
           <div className="h-full flex flex-col items-center justify-center py-20">
             <div className="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-6"></div>
             <h3 className="text-xl font-bold text-slate-800">Processando...</h3>
-            <p className="text-slate-500 text-center max-w-md mt-2">
-              Gerando planilha Excel e salvando dados na nuvem segura...
+            <p className="text-slate-500 text-center max-w-md mt-2 animate-pulse">
+              {loadingText}
             </p>
           </div>
         ) : (
@@ -356,3 +365,4 @@ const ReportWizard: React.FC<ReportWizardProps> = ({ onSuccess }) => {
 };
 
 export default ReportWizard;
+    

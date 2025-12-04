@@ -12,23 +12,13 @@ export const submitReport = async (data: ReportData): Promise<SubmissionResult> 
   const protocol = `CABV-${timestamp}-${random}`;
 
   // Simulate network delay for "Excel Generation" and "Cloud Upload"
-  await new Promise(resolve => setTimeout(resolve, 3000));
+  // We will let the UI handle the step-by-step text, but we keep the delay here for realism
+  await new Promise(resolve => setTimeout(resolve, 4000));
 
   // Simulate Excel/CSV Row Data
   const csvHeader = "Protocolo;Data;Categoria;Nome;Email;Telefone;Endereço;Alvo;Cargo;Descrição;Violação;Solicita_Especialista;Anexos";
   const csvRow = `${protocol};${data.dateOfIncident};${data.category};${data.isAnonymous ? 'ANONIMO' : data.userName};${data.userEmail};${data.userPhone};${data.userAddress};${data.targetName};${data.targetRole};"${data.description.replace(/\n/g, ' ')}";"${data.possibleViolation || ''}";${data.wantsSpecialistGuidance ? 'SIM' : 'NÃO'};${data.attachments.length}`;
   const fileName = `Relatorio_${protocol}.xlsx`;
-
-  const emailBody = `
-    ---------------------------------------------------
-    NOVO RELATO RECEBIDO - CABV
-    ---------------------------------------------------
-    DESTINATÁRIO: ${ADMIN_EMAIL}
-    ASSUNTO: Novo ${data.category} - Protocolo ${protocol}
-    
-    ... (Dados completos disponíveis na planilha anexa) ...
-    ---------------------------------------------------
-  `;
 
   // Log the simulation steps
   console.groupCollapsed(`📊 EXCEL GENERATION & CLOUD SYNC - ${protocol}`);
@@ -43,25 +33,26 @@ export const submitReport = async (data: ReportData): Promise<SubmissionResult> 
 
   console.log(`---------------------------------------------------`);
 
-  console.log(`[Auth] Authenticating secure session for admin: ${ADMIN_EMAIL}... OK`);
-  console.log(`[Cloud] Connecting to Google Drive Container... OK`);
+  console.log(`[Auth] Authenticating Google Cloud session for: ${ADMIN_EMAIL}... OK`);
+  console.log(`[Cloud] Connecting to Drive Container [CABV_Reports]... OK`);
   
-  console.log(`[Upload] Uploading '${fileName}' (${(csvRow.length * 2)} bytes)... 100%`);
+  console.log(`[Upload] Uploading '${fileName}' (${(csvRow.length * 2)} bytes) to Drive... 100%`);
   
   if (data.attachments.length > 0) {
     console.log(`[Upload] Processing ${data.attachments.length} evidence attachments...`);
     data.attachments.forEach((att, i) => {
-      console.log(`   - Uploading attachment_${i + 1}_${att.type}... 100%`);
+      console.log(`   - Uploading attachment_${i + 1}_${att.type} to Drive... 100%`);
     });
   }
   
-  console.log(`[Notify] Sending sync confirmation to ${ADMIN_EMAIL}... OK`);
-  console.log(`[Success] Data archived successfully.`);
+  console.log(`[Sync] Verifying integrity with ${ADMIN_EMAIL} cloud storage... OK`);
+  console.log(`[Success] Data archived successfully in Google Drive.`);
   console.groupEnd();
 
   return {
     protocol: protocol,
-    message: `Relato registrado com sucesso. Planilha Excel gerada.`,
-    estimatedResponseTime: "48 a 72 horas úteis"
+    message: `Relato registrado com sucesso.`,
+    estimatedResponseTime: "48 a 72 horas úteis",
+    savedToCloud: true
   };
 };
