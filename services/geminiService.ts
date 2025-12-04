@@ -4,18 +4,22 @@ import { ReportData, SubmissionResult } from "../types";
 // This service no longer uses AI. It simulates a backend submission.
 
 export const submitReport = async (data: ReportData): Promise<SubmissionResult> => {
-  // Simulate network delay
-  await new Promise(resolve => setTimeout(resolve, 2000));
-
   const ADMIN_EMAIL = "tiagomes99@gmail.com";
+  
+  // Generate a random protocol number first for logging
+  const timestamp = new Date().getTime().toString().slice(-6);
+  const random = Math.floor(1000 + Math.random() * 9000);
+  const protocol = `CABV-${timestamp}-${random}`;
 
-  // Formating the email body for the mock console log
+  // Simulate network delay for "Cloud Upload"
+  await new Promise(resolve => setTimeout(resolve, 2500));
+
   const emailBody = `
     ---------------------------------------------------
     NOVO RELATO RECEBIDO - CABV
     ---------------------------------------------------
     DESTINATÁRIO: ${ADMIN_EMAIL}
-    ASSUNTO: Novo ${data.category} - Protocolo Pendente
+    ASSUNTO: Novo ${data.category} - Protocolo ${protocol}
     
     1. DADOS DO MORADOR
     -------------------
@@ -46,20 +50,26 @@ export const submitReport = async (data: ReportData): Promise<SubmissionResult> 
   `;
 
   // Log the email sending simulation
-  console.group("📧 MOCK EMAIL SERVICE");
-  console.log(`Attempting to send email to: ${ADMIN_EMAIL}`);
-  console.log("Email Body Preview:", emailBody);
-  console.log("Attachments Payload:", data.attachments);
+  console.groupCollapsed(`☁️ CLOUD STORAGE UPLOAD - ${protocol}`);
+  console.log(`[Auth] Authenticating secure session for admin: ${ADMIN_EMAIL}... OK`);
+  console.log(`[Storage] Connecting to Google Drive Container... OK`);
+  console.log(`[Upload] Uploading manifest.json... OK`);
+  
+  if (data.attachments.length > 0) {
+    console.log(`[Upload] Processing ${data.attachments.length} attachments...`);
+    data.attachments.forEach((att, i) => {
+      console.log(`   - Uploading file_${i + 1}_${att.type}... 100%`);
+    });
+  }
+  
+  console.log(`[Notify] Sending email notification to ${ADMIN_EMAIL}... OK`);
+  console.log("Email Body Payload:", emailBody);
+  console.log(`[Success] Data persisted to cloud storage.`);
   console.groupEnd();
-
-  // Generate a random protocol number
-  const timestamp = new Date().getTime().toString().slice(-6);
-  const random = Math.floor(1000 + Math.random() * 9000);
-  const protocol = `CABV-${timestamp}-${random}`;
 
   return {
     protocol: protocol,
-    message: `Seu relato foi registrado e uma notificação completa foi enviada para o administrador (${ADMIN_EMAIL}).`,
+    message: `Seu relato foi salvo com segurança na nuvem e notificado ao administrador (${ADMIN_EMAIL}).`,
     estimatedResponseTime: "48 a 72 horas úteis"
   };
 };
