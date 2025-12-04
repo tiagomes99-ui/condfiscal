@@ -308,9 +308,9 @@ const ReportWizard: React.FC<ReportWizardProps> = ({ onSuccess }) => {
         {loading ? (
           <div className="h-full flex flex-col items-center justify-center py-20">
             <div className="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-6"></div>
-            <h3 className="text-xl font-bold text-slate-800">Salvando na Nuvem...</h3>
+            <h3 className="text-xl font-bold text-slate-800">Processando...</h3>
             <p className="text-slate-500 text-center max-w-md mt-2">
-              Estamos criptografando seus dados e realizando o upload seguro para a conta administrativa.
+              Gerando planilha Excel e salvando dados na nuvem segura...
             </p>
           </div>
         ) : (

@@ -17,8 +17,8 @@ const AnalysisResult: React.FC<Props> = ({ data, onClose }) => {
           </svg>
         </div>
         <h2 className="text-3xl font-bold mb-2">Recebemos seu Relato</h2>
-        <p className="text-green-100 text-lg">
-          O protocolo foi gerado com sucesso e encaminhado para análise.
+        <p className="text-green-100 text-lg px-4">
+          {data.message}
         </p>
       </div>
 

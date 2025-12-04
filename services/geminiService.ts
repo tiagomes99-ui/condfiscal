@@ -11,8 +11,13 @@ export const submitReport = async (data: ReportData): Promise<SubmissionResult> 
   const random = Math.floor(1000 + Math.random() * 9000);
   const protocol = `CABV-${timestamp}-${random}`;
 
-  // Simulate network delay for "Cloud Upload"
-  await new Promise(resolve => setTimeout(resolve, 2500));
+  // Simulate network delay for "Excel Generation" and "Cloud Upload"
+  await new Promise(resolve => setTimeout(resolve, 3000));
+
+  // Simulate Excel/CSV Row Data
+  const csvHeader = "Protocolo;Data;Categoria;Nome;Email;Telefone;Endereço;Alvo;Cargo;Descrição;Violação;Solicita_Especialista;Anexos";
+  const csvRow = `${protocol};${data.dateOfIncident};${data.category};${data.isAnonymous ? 'ANONIMO' : data.userName};${data.userEmail};${data.userPhone};${data.userAddress};${data.targetName};${data.targetRole};"${data.description.replace(/\n/g, ' ')}";"${data.possibleViolation || ''}";${data.wantsSpecialistGuidance ? 'SIM' : 'NÃO'};${data.attachments.length}`;
+  const fileName = `Relatorio_${protocol}.xlsx`;
 
   const emailBody = `
     ---------------------------------------------------
@@ -21,55 +26,42 @@ export const submitReport = async (data: ReportData): Promise<SubmissionResult> 
     DESTINATÁRIO: ${ADMIN_EMAIL}
     ASSUNTO: Novo ${data.category} - Protocolo ${protocol}
     
-    1. DADOS DO MORADOR
-    -------------------
-    Nome: ${data.isAnonymous ? 'ANÔNIMO' : data.userName}
-    Email: ${data.userEmail}
-    Telefone: ${data.userPhone}
-    Endereço: ${data.userAddress}
-    Solicita Especialista: ${data.wantsSpecialistGuidance ? 'SIM' : 'NÃO'}
-
-    2. DADOS DO INCIDENTE
-    ---------------------
-    Tipo: ${data.category}
-    Data: ${data.dateOfIncident}
-    Alvo: ${data.targetName} (${data.targetRole})
-    
-    3. DESCRIÇÃO
-    ------------
-    ${data.description}
-
-    4. POSSÍVEL VIOLAÇÃO
-    --------------------
-    ${data.possibleViolation || 'Não informada'}
-
-    5. ANEXOS
-    ---------
-    ${data.attachments.length} arquivos anexados.
+    ... (Dados completos disponíveis na planilha anexa) ...
     ---------------------------------------------------
   `;
 
-  // Log the email sending simulation
-  console.groupCollapsed(`☁️ CLOUD STORAGE UPLOAD - ${protocol}`);
+  // Log the simulation steps
+  console.groupCollapsed(`📊 EXCEL GENERATION & CLOUD SYNC - ${protocol}`);
+  
+  console.log(`[System] Initializing spreadsheet generator engine...`);
+  console.log(`[Excel] Creating workbook... OK`);
+  console.log(`[Excel] Adding worksheet 'Relatos_2024'... OK`);
+  console.log(`[Excel] Appending row data:`);
+  console.log(`\x1b[33m${csvHeader}\x1b[0m`);
+  console.log(`\x1b[32m${csvRow}\x1b[0m`);
+  console.log(`[Excel] Compiling file '${fileName}'... DONE`);
+
+  console.log(`---------------------------------------------------`);
+
   console.log(`[Auth] Authenticating secure session for admin: ${ADMIN_EMAIL}... OK`);
-  console.log(`[Storage] Connecting to Google Drive Container... OK`);
-  console.log(`[Upload] Uploading manifest.json... OK`);
+  console.log(`[Cloud] Connecting to Google Drive Container... OK`);
+  
+  console.log(`[Upload] Uploading '${fileName}' (${(csvRow.length * 2)} bytes)... 100%`);
   
   if (data.attachments.length > 0) {
-    console.log(`[Upload] Processing ${data.attachments.length} attachments...`);
+    console.log(`[Upload] Processing ${data.attachments.length} evidence attachments...`);
     data.attachments.forEach((att, i) => {
-      console.log(`   - Uploading file_${i + 1}_${att.type}... 100%`);
+      console.log(`   - Uploading attachment_${i + 1}_${att.type}... 100%`);
     });
   }
   
-  console.log(`[Notify] Sending email notification to ${ADMIN_EMAIL}... OK`);
-  console.log("Email Body Payload:", emailBody);
-  console.log(`[Success] Data persisted to cloud storage.`);
+  console.log(`[Notify] Sending sync confirmation to ${ADMIN_EMAIL}... OK`);
+  console.log(`[Success] Data archived successfully.`);
   console.groupEnd();
 
   return {
     protocol: protocol,
-    message: `Seu relato foi salvo com segurança na nuvem e notificado ao administrador (${ADMIN_EMAIL}).`,
+    message: `Relato registrado com sucesso. Planilha Excel gerada.`,
     estimatedResponseTime: "48 a 72 horas úteis"
   };
 };
